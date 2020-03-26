@@ -6,9 +6,11 @@ import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sh.lrk.yahs.*;
+import tech.lerk.meshtalk.Meta;
 import tech.lerk.meshtalk.adapters.PrivateKeyTypeAdapter;
 import tech.lerk.meshtalk.adapters.PublicKeyTypeAdapter;
 import tech.lerk.meshtalk.entities.Message;
+import tech.lerk.meshtalk.entities.MetaInfo;
 import tech.lerk.meshtalk.gateway.managers.ConfigManager;
 import tech.lerk.meshtalk.gateway.managers.DatabaseManager;
 import tech.lerk.meshtalk.gateway.responses.ResolverResponse;
@@ -49,6 +51,12 @@ public class Main {
         routes.add(Method.GET, "/", "html/landing.html");
         routes.add(Method.GET, "/style.css", "html/style.css");
         routes.add(Method.GET, "/favicon.ico", "html/favicon.ico");
+        routes.add(Method.GET, "/meta", req -> {
+            MetaInfo metaInfo = new MetaInfo();
+            metaInfo.setApiVersion(Meta.API_VERSION);
+            metaInfo.setCoreVersion(Meta.CORE_VERSION);
+            return new Response(gson.toJson(metaInfo), ContentType.APPLICATION_OCTET_STREAM);
+        });
         routes.add(Method.POST, "/", req -> {
             String[] jsonSplit = req.toString().split("\n\\{");
             String json = "{" + jsonSplit[jsonSplit.length - 1];
