@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+  postgres:
+    image: postgres:alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: changemebabychangeme
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d:consistent
+      - ./data:/var/lib/postgresql/data:consistent
+
+  sh:
+    build: .
+    image: lerk/meshtalk-gateway:latest
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    links:
+      - postgres:db
+    ports:
+      - "127.0.0.1:8082:8080"
+
+volumes:
+  db:

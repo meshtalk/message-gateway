@@ -1,0 +1,112 @@
+body,
+html {
+    height: 100%;
+    display: grid;
+    overflow: hidden;
+    min-width: 400px;
+}
+
+.content,
+h1.error {
+    margin: auto;
+    padding: 48px;
+    min-width: 400px;
+}
+
+form input,
+form label,
+form button {
+    display: block;
+    margin-top: 8px;
+    font-family: monospace;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h2 {
+    font-weight: 100;
+    font-family: monospace;
+}
+
+form input {
+    margin-top: 3px;
+    margin-bottom: 8px !important;
+    padding: 8px;
+    width: 95%;
+    border: 1px none;
+}
+
+form input:focus,
+form input:active {
+    margin-top: 2px;
+    border: 1px solid;
+}
+
+form label {
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
+form button,
+form input {
+    color: #fff;
+    height: 37px;
+    background-color: transparent;
+    border-bottom-style: solid;
+    border-radius: 0;
+    min-height: 37px;
+}
+
+form button {
+    transition: background-color 0.2s ease-in-out;
+    margin-top: 16px !important;
+    font-weight: 900;
+    width: 100%;
+    border: 1px solid;
+}
+
+form button:hover {
+    background-color: transparent;
+    color: #fff;
+    cursor: pointer;
+}
+
+.content a,
+.content a:hover,
+.content a:visited,
+.content a:active,
+.content a:focus,
+.content a:focus-within {
+    color: #fff;
+    width: 100%;
+    margin-top: 16px;
+    text-align: center;
+    display: inline-block;
+    font-family: monospace;
+    text-decoration-line: underline;
+    text-decoration-style: dotted;
+}
+
+body {
+    color: #fff;
+    background-color: #000;
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-width: 400px;
+}
+
+h1.error {
+    font-family: monospace;
+    font-weight: 500;
+    color: #f00;
+}
+
+h1.info {
+    font-family: monospace;
+    font-weight: 500;
+    color: #fff;
+}
