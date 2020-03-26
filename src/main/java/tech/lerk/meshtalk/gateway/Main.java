@@ -63,7 +63,7 @@ public class Main {
                 return new Response("Unable to save Message!", Status.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN);
             }
         });
-        routes.addCatchAll(new ResolverResponse(databaseManager));
+        routes.addCatchAll(new ResolverResponse(databaseManager, gson));
 
         log.info("Starting Server...");
 
