@@ -44,7 +44,7 @@
         <junit.launcher.version>1.3.2</junit.launcher.version>
         <postgres.version>42.2.10</postgres.version>
         <yahs.version>1.0.12</yahs.version>
-        <meshtalk.core.version>1.0.6</meshtalk.core.version>
+        <meshtalk.core.version>1.0.7</meshtalk.core.version>
         <!-- /versions -->
     </properties>
 
