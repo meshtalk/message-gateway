@@ -2,6 +2,7 @@ package tech.lerk.meshtalk.gateway;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import sh.lrk.yahs.*;
 import tech.lerk.meshtalk.Meta;
 import tech.lerk.meshtalk.adapters.PrivateKeyTypeAdapter;
 import tech.lerk.meshtalk.adapters.PublicKeyTypeAdapter;
+import tech.lerk.meshtalk.entities.Chat;
 import tech.lerk.meshtalk.entities.Message;
 import tech.lerk.meshtalk.entities.MetaInfo;
 import tech.lerk.meshtalk.gateway.managers.ConfigManager;
@@ -61,7 +63,14 @@ public class Main {
             String[] jsonSplit = req.toString().split("\n\\{");
             String json = "{" + jsonSplit[jsonSplit.length - 1];
             try {
-                databaseManager.saveMessage(gson.fromJson(json, Message.class));
+                try {
+                    Chat.Handshake handshake = gson.fromJson(json, Chat.Handshake.class);
+                    databaseManager.saveHandshake(handshake);
+                } catch(JsonIOException | JsonSyntaxException ignored) {
+                    // Message is probably not a Handshake and that's okay for now...
+                }
+                Message message = gson.fromJson(json, Message.class);
+                databaseManager.saveMessage(message);
                 return new Response("Message received!", Status.OK, ContentType.TEXT_PLAIN);
             } catch (JsonSyntaxException e) {
                 log.error("Unable to decode JSON: '" + json + "'", e);

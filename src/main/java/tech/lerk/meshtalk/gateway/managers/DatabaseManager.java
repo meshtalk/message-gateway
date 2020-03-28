@@ -2,6 +2,7 @@ package tech.lerk.meshtalk.gateway.managers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.lerk.meshtalk.entities.Chat;
 import tech.lerk.meshtalk.entities.Message;
 
 import java.sql.*;
@@ -37,6 +38,7 @@ public class DatabaseManager {
         preparedStatement.setString(3, message.getSender().toString());
         preparedStatement.setString(4, message.getReceiver().toString());
         preparedStatement.setTime(5, message.getDate());
+        preparedStatement.setString(6, message.getContent());
         preparedStatement.executeUpdate();
     }
 
@@ -109,6 +111,20 @@ public class DatabaseManager {
         m.setDate(resultSet.getTime("date"));
         m.setContent(resultSet.getString("content"));
         return m;
+    }
+
+    public void saveHandshake(Chat.Handshake handshake) throws SQLException {
+        log.info("Saving handshake: '" + handshake.getId() + "'");
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO meshtalk_mg.handshakes " +
+                "(uuid_id, uuid_chat, uuid_sender, uuid_receiver, date, content, key) VALUES (?, ?, ?, ?, ?, ?, ?);");
+        preparedStatement.setString(1, handshake.getId().toString());
+        preparedStatement.setString(2, handshake.getChat().toString());
+        preparedStatement.setString(3, handshake.getSender().toString());
+        preparedStatement.setString(4, handshake.getReceiver().toString());
+        preparedStatement.setTime(5, handshake.getDate());
+        preparedStatement.setString(6, handshake.getContent());
+        preparedStatement.setString(7, handshake.getKey());
+        preparedStatement.executeUpdate();
     }
 
     public static class NoResultException extends SQLException {
