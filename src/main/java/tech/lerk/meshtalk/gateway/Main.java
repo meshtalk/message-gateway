@@ -1,15 +1,13 @@
 package tech.lerk.meshtalk.gateway;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sh.lrk.yahs.*;
 import tech.lerk.meshtalk.Meta;
-import tech.lerk.meshtalk.adapters.PrivateKeyTypeAdapter;
-import tech.lerk.meshtalk.adapters.PublicKeyTypeAdapter;
+import tech.lerk.meshtalk.Utils;
 import tech.lerk.meshtalk.entities.Chat;
 import tech.lerk.meshtalk.entities.Message;
 import tech.lerk.meshtalk.entities.MetaInfo;
@@ -17,8 +15,6 @@ import tech.lerk.meshtalk.gateway.managers.ConfigManager;
 import tech.lerk.meshtalk.gateway.managers.DatabaseManager;
 import tech.lerk.meshtalk.gateway.responses.ResolverResponse;
 
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.sql.SQLException;
 
 public class Main {
@@ -29,10 +25,7 @@ public class Main {
 
     private static DatabaseManager databaseManager;
 
-    private static final Gson gson = new GsonBuilder()
-            .registerTypeAdapter(PrivateKey.class, new PrivateKeyTypeAdapter())
-            .registerTypeAdapter(PublicKey.class, new PublicKeyTypeAdapter())
-            .create();
+    private static final Gson gson = Utils.getGson();
 
     public static void main(String[] args) {
 
@@ -66,7 +59,7 @@ public class Main {
                 try {
                     Chat.Handshake handshake = gson.fromJson(json, Chat.Handshake.class);
                     databaseManager.saveHandshake(handshake);
-                } catch(JsonIOException | JsonSyntaxException ignored) {
+                } catch (JsonIOException | JsonSyntaxException ignored) {
                     // Message is probably not a Handshake and that's okay for now...
                 }
                 Message message = gson.fromJson(json, Message.class);
