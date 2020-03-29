@@ -29,7 +29,6 @@ create table if not exists meshtalk_mg.handshakes
     uuid_sender   VARCHAR(36)        not null,
     uuid_receiver VARCHAR(36)        not null,
     date          TIME               not null,
-    content       VARCHAR            not null,
     key           VARCHAR            not null
 );
 
