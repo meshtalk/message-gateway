@@ -27,6 +27,7 @@ public class ResolverResponse implements IResponse {
 
     @Override
     public Response getResponse(Request request) {
+        log.info("Handling request by: '" + request.getClientAddress() + "', url: '" + request.getUrl());
         if (Method.GET.equals(request.getMethod())) {
             if (request.getUrl().startsWith("/id/")) {
                 return resolveMessageById(request);
@@ -53,7 +54,7 @@ public class ResolverResponse implements IResponse {
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No message found with uuid: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.warn(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -74,7 +75,7 @@ public class ResolverResponse implements IResponse {
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No messages found for chat: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.warn(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -95,7 +96,7 @@ public class ResolverResponse implements IResponse {
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No messages found for sender: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.warn(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -115,8 +116,8 @@ public class ResolverResponse implements IResponse {
             log.error(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
-            String msg = "No messages found for sender: '" + uuidString + "'!";
-            log.error(msg, e);
+            String msg = "No messages found for receiver: '" + uuidString + "'!";
+            log.warn(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";

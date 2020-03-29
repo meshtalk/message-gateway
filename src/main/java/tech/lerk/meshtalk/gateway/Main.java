@@ -47,22 +47,26 @@ public class Main {
         routes.add(Method.GET, "/style.css", "html/style.css");
         routes.add(Method.GET, "/favicon.ico", "html/favicon.ico");
         routes.add(Method.GET, "/meta", req -> {
+            log.info("Serving meta to: '" + req.getClientAddress() + "'");
             MetaInfo metaInfo = new MetaInfo();
             metaInfo.setApiVersion(Meta.API_VERSION);
             metaInfo.setCoreVersion(Meta.CORE_VERSION);
             return new Response(gson.toJson(metaInfo), ContentType.APPLICATION_OCTET_STREAM);
         });
         routes.add(Method.POST, "/", req -> {
+            log.info("Handling post request by: '" + req.getClientAddress() + "'");
             String[] jsonSplit = req.toString().split("\n\\{");
             String json = "{" + jsonSplit[jsonSplit.length - 1];
             try {
                 try {
                     Chat.Handshake handshake = gson.fromJson(json, Chat.Handshake.class);
+                    log.info("Got new handshake: '" + handshake.getId() + "'!");
                     databaseManager.saveHandshake(handshake);
                 } catch (JsonIOException | JsonSyntaxException ignored) {
                     // Message is probably not a Handshake and that's okay for now...
                 }
                 Message message = gson.fromJson(json, Message.class);
+                log.info("Got new message: '" + message.getId() + "'!");
                 databaseManager.saveMessage(message);
                 return new Response("Message received!", Status.OK, ContentType.TEXT_PLAIN);
             } catch (JsonSyntaxException e) {
