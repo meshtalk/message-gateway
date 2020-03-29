@@ -102,6 +102,34 @@ public class DatabaseManager {
         }
     }
 
+    public List<Chat.Handshake> getHandshakesForReceiver(UUID uuid) throws SQLException {
+        PreparedStatement preparedStatement = connection
+                .prepareStatement("SELECT * FROM meshtalk_mg.handshakes WHERE uuid_receiver = ?;");
+        preparedStatement.setString(1, uuid.toString());
+        ResultSet resultSet = preparedStatement.executeQuery();
+        ArrayList<Chat.Handshake> res = new ArrayList<>();
+        while (resultSet.next()) {
+            res.add(buildHandshake(resultSet));
+        }
+        if (res.isEmpty()) {
+            throw new NoResultException("No messages found for receiverId: '" + uuid + "'");
+        } else {
+            return res;
+        }
+    }
+
+    private Chat.Handshake buildHandshake(ResultSet resultSet) throws SQLException {
+        Chat.Handshake h = new Chat.Handshake();
+        h.setId(UUID.fromString(resultSet.getString("uuid_id")));
+        h.setChat(UUID.fromString(resultSet.getString("uuid_chat")));
+        h.setSender(UUID.fromString(resultSet.getString("uuid_sender")));
+        h.setReceiver(UUID.fromString(resultSet.getString("uuid_receiver")));
+        h.setDate(resultSet.getTime("date"));
+        h.setContent(resultSet.getString("content"));
+        h.setKey(resultSet.getString("key"));
+        return h;
+    }
+
     private static Message buildMessage(ResultSet resultSet) throws SQLException {
         Message m = new Message();
         m.setId(UUID.fromString(resultSet.getString("uuid_id")));
