@@ -1,18 +1,14 @@
 package tech.lerk.meshtalk.gateway;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sh.lrk.yahs.*;
 import tech.lerk.meshtalk.Meta;
 import tech.lerk.meshtalk.Utils;
-import tech.lerk.meshtalk.entities.Chat;
-import tech.lerk.meshtalk.entities.Message;
 import tech.lerk.meshtalk.entities.MetaInfo;
 import tech.lerk.meshtalk.gateway.managers.ConfigManager;
-import tech.lerk.meshtalk.gateway.managers.DatabaseManager;
+import tech.lerk.meshtalk.gateway.managers.db.DatabaseManager;
 import tech.lerk.meshtalk.gateway.responses.ResolverResponse;
 
 import java.sql.SQLException;

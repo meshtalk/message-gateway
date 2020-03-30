@@ -5,10 +5,9 @@ import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sh.lrk.yahs.*;
-import tech.lerk.meshtalk.entities.Chat;
 import tech.lerk.meshtalk.entities.Handshake;
 import tech.lerk.meshtalk.entities.Message;
-import tech.lerk.meshtalk.gateway.managers.DatabaseManager;
+import tech.lerk.meshtalk.gateway.managers.db.DatabaseManager;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -57,7 +56,7 @@ public class ResolverResponse implements IResponse {
                 try {
                     Message message = gson.fromJson(json, Message.class);
                     log.info("Got new message: '" + message.getId() + "'!");
-                    databaseManager.saveMessage(message);
+                    databaseManager.getMessageDatabaseManager().saveMessage(message);
                     return new Response("Message received!", Status.OK, ContentType.TEXT_PLAIN);
                 } catch (JsonSyntaxException e) {
                     log.error("Unable to decode JSON: '" + json + "'", e);
@@ -72,7 +71,7 @@ public class ResolverResponse implements IResponse {
                 try {
                     Handshake handshake = gson.fromJson(json, Handshake.class);
                     log.info("Got new handshake: '" + handshake.getId() + "'!");
-                    databaseManager.saveHandshake(handshake);
+                    databaseManager.getHandshakeDatabaseManager().saveHandshake(handshake);
                     return new Response("Handshake received!", Status.OK, ContentType.TEXT_PLAIN);
                 } catch (JsonSyntaxException e) {
                     log.error("Unable to decode JSON: '" + json + "'", e);
@@ -90,7 +89,7 @@ public class ResolverResponse implements IResponse {
         String uuidString = parseUuidString(request);
         try {
             UUID uuid = UUID.fromString(uuidString);
-            Handshake handshake = databaseManager.getHandshakeById(uuid);
+            Handshake handshake = databaseManager.getHandshakeDatabaseManager().getHandshakeById(uuid);
             return new Response(gson.toJson(handshake), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode handshake UUID: '" + uuidString + "'!";
@@ -111,7 +110,7 @@ public class ResolverResponse implements IResponse {
         String uuidString = parseUuidString(request);
         try {
             UUID uuid = UUID.fromString(uuidString);
-            Message message = databaseManager.getMessageById(uuid);
+            Message message = databaseManager.getMessageDatabaseManager().getMessageById(uuid);
             return new Response(gson.toJson(message), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode message UUID: '" + uuidString + "'!";
@@ -132,7 +131,7 @@ public class ResolverResponse implements IResponse {
         String uuidString = parseUuidString(request);
         try {
             UUID uuid = UUID.fromString(uuidString);
-            List<Handshake> handshakes = databaseManager.getHandshakesForChat(uuid);
+            List<Handshake> handshakes = databaseManager.getHandshakeDatabaseManager().getHandshakesForChat(uuid);
             return new Response(gson.toJson(handshakes), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
@@ -153,7 +152,7 @@ public class ResolverResponse implements IResponse {
         String uuidString = parseUuidString(request);
         try {
             UUID uuid = UUID.fromString(uuidString);
-            List<Message> messages = databaseManager.getMessagesForChat(uuid);
+            List<Message> messages = databaseManager.getMessageDatabaseManager().getMessagesForChat(uuid);
             return new Response(gson.toJson(messages), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
@@ -174,7 +173,7 @@ public class ResolverResponse implements IResponse {
         String uuidString = parseUuidString(request);
         try {
             UUID uuid = UUID.fromString(uuidString);
-            List<Handshake> handshakes = databaseManager.getHandshakesForSender(uuid);
+            List<Handshake> handshakes = databaseManager.getHandshakeDatabaseManager().getHandshakesForSender(uuid);
             return new Response(gson.toJson(handshakes), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
@@ -195,7 +194,7 @@ public class ResolverResponse implements IResponse {
         String uuidString = parseUuidString(request);
         try {
             UUID uuid = UUID.fromString(uuidString);
-            List<Message> messages = databaseManager.getMessagesForSender(uuid);
+            List<Message> messages = databaseManager.getMessageDatabaseManager().getMessagesForSender(uuid);
             return new Response(gson.toJson(messages), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
@@ -216,14 +215,14 @@ public class ResolverResponse implements IResponse {
         String uuidString = parseUuidString(request);
         try {
             UUID uuid = UUID.fromString(uuidString);
-            List<Handshake> handshakes = databaseManager.getHandshakesForReceiver(uuid);
+            List<Handshake> handshakes = databaseManager.getHandshakeDatabaseManager().getHandshakesForReceiver(uuid);
             return new Response(gson.toJson(handshakes), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
             log.error(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
-            String msg = "No messages found for receiver: '" + uuidString + "'!";
+            String msg = "No handshakes found for receiver: '" + uuidString + "'!";
             log.warn(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
@@ -237,7 +236,7 @@ public class ResolverResponse implements IResponse {
         String uuidString = parseUuidString(request);
         try {
             UUID uuid = UUID.fromString(uuidString);
-            List<Message> messages = databaseManager.getMessagesForReceiver(uuid);
+            List<Message> messages = databaseManager.getMessageDatabaseManager().getMessagesForReceiver(uuid);
             return new Response(gson.toJson(messages), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
