@@ -2,12 +2,14 @@ package tech.lerk.meshtalk.gateway.managers.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.lerk.meshtalk.Utils;
 import tech.lerk.meshtalk.entities.Handshake;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +32,7 @@ public class HandshakeDatabaseManager {
         preparedStatement.setString(2, handshake.getChat().toString());
         preparedStatement.setString(3, handshake.getSender().toString());
         preparedStatement.setString(4, handshake.getReceiver().toString());
-        preparedStatement.setTime(5, handshake.getDate());
+        preparedStatement.setString(5, Utils.getGson().toJson(handshake.getDate()));
         preparedStatement.setString(6, handshake.getKey());
         preparedStatement.executeUpdate();
     }
@@ -102,7 +104,7 @@ public class HandshakeDatabaseManager {
         h.setChat(UUID.fromString(resultSet.getString("uuid_chat")));
         h.setSender(UUID.fromString(resultSet.getString("uuid_sender")));
         h.setReceiver(UUID.fromString(resultSet.getString("uuid_receiver")));
-        h.setDate(resultSet.getTime("date"));
+        h.setDate(Utils.getGson().fromJson(resultSet.getString("date"), LocalDateTime.class));
         h.setKey(resultSet.getString("key"));
         return h;
     }

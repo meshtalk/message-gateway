@@ -2,12 +2,14 @@ package tech.lerk.meshtalk.gateway.managers.db;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.lerk.meshtalk.Utils;
 import tech.lerk.meshtalk.entities.Message;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +32,7 @@ public class MessageDatabaseManager {
         preparedStatement.setString(2, message.getChat().toString());
         preparedStatement.setString(3, message.getSender().toString());
         preparedStatement.setString(4, message.getReceiver().toString());
-        preparedStatement.setTime(5, message.getDate());
+        preparedStatement.setString(5, Utils.getGson().toJson(message.getDate()));
         preparedStatement.setString(6, message.getContent());
         preparedStatement.executeUpdate();
     }
@@ -101,7 +103,7 @@ public class MessageDatabaseManager {
         m.setChat(UUID.fromString(resultSet.getString("uuid_chat")));
         m.setSender(UUID.fromString(resultSet.getString("uuid_sender")));
         m.setReceiver(UUID.fromString(resultSet.getString("uuid_receiver")));
-        m.setDate(resultSet.getTime("date"));
+        m.setDate(Utils.getGson().fromJson(resultSet.getString("date"), LocalDateTime.class));
         m.setContent(resultSet.getString("content"));
         return m;
     }

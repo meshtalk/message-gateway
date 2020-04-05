@@ -9,7 +9,7 @@ create table if not exists meshtalk_mg.messages
     uuid_chat     VARCHAR(36)        not null,
     uuid_sender   VARCHAR(36)        not null,
     uuid_receiver VARCHAR(36)        not null,
-    date          TIME               not null,
+    date          VARCHAR            not null,
     content       VARCHAR            not null
 );
 
@@ -28,7 +28,7 @@ create table if not exists meshtalk_mg.handshakes
     uuid_chat     VARCHAR(36)        not null,
     uuid_sender   VARCHAR(36)        not null,
     uuid_receiver VARCHAR(36)        not null,
-    date          TIME               not null,
+    date          VARCHAR            not null,
     key           VARCHAR            not null
 );
 
