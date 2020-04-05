@@ -34,7 +34,7 @@ public class HandshakeDatabaseManager {
         preparedStatement.setString(4, handshake.getReceiver().toString());
         preparedStatement.setString(5, Utils.getGson().toJson(handshake.getDate()));
         preparedStatement.setString(6, handshake.getKey());
-        preparedStatement.setString(6, handshake.getIv());
+        preparedStatement.setString(7, handshake.getIv());
         preparedStatement.executeUpdate();
     }
 
