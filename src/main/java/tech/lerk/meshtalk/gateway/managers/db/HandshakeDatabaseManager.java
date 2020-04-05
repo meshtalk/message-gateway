@@ -27,13 +27,14 @@ public class HandshakeDatabaseManager {
     public void saveHandshake(Handshake handshake) throws SQLException {
         log.info("Saving handshake: '" + handshake.getId() + "'");
         PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO meshtalk_mg.handshakes " +
-                "(uuid_id, uuid_chat, uuid_sender, uuid_receiver, date, key) VALUES (?, ?, ?, ?, ?, ?);");
+                "(uuid_id, uuid_chat, uuid_sender, uuid_receiver, date, key, iv) VALUES (?, ?, ?, ?, ?, ?, ?);");
         preparedStatement.setString(1, handshake.getId().toString());
         preparedStatement.setString(2, handshake.getChat().toString());
         preparedStatement.setString(3, handshake.getSender().toString());
         preparedStatement.setString(4, handshake.getReceiver().toString());
         preparedStatement.setString(5, Utils.getGson().toJson(handshake.getDate()));
         preparedStatement.setString(6, handshake.getKey());
+        preparedStatement.setString(6, handshake.getIv());
         preparedStatement.executeUpdate();
     }
 
@@ -106,6 +107,7 @@ public class HandshakeDatabaseManager {
         h.setReceiver(UUID.fromString(resultSet.getString("uuid_receiver")));
         h.setDate(Utils.getGson().fromJson(resultSet.getString("date"), LocalDateTime.class));
         h.setKey(resultSet.getString("key"));
+        h.setIv(resultSet.getString("iv"));
         return h;
     }
 }
