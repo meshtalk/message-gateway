@@ -29,28 +29,29 @@ public class ResolverResponse implements IResponse {
 
     @Override
     public Response getResponse(Request request) {
+        String url = request.getUrl();
         if (Method.GET.equals(request.getMethod())) {
-            log.info("Handling GET request by: '" + request.getClientAddress() + "', url: '" + request.getUrl() + "'");
-            if (request.getUrl().startsWith("/messages/id/")) {
+            log.info("GET '" + url + "': '" + request.getClientAddress() + "'");
+            if (url.startsWith("/messages/id/")) {
                 return resolveMessageById(request);
-            } else if (request.getUrl().startsWith("/messages/chat/")) {
+            } else if (url.startsWith("/messages/chat/")) {
                 return resolveMessagesByChat(request);
-            } else if (request.getUrl().startsWith("/messages/sender/")) {
+            } else if (url.startsWith("/messages/sender/")) {
                 return resolveMessagesBySender(request);
-            } else if (request.getUrl().startsWith("/messages/receiver/")) {
+            } else if (url.startsWith("/messages/receiver/")) {
                 return resolveMessagesByReceiver(request);
-            } else if (request.getUrl().startsWith("/handshakes/id/")) {
+            } else if (url.startsWith("/handshakes/id/")) {
                 return resolveHandshakeById(request);
-            } else if (request.getUrl().startsWith("/handshakes/chat/")) {
+            } else if (url.startsWith("/handshakes/chat/")) {
                 return resolveHandshakesByChat(request);
-            } else if (request.getUrl().startsWith("/handshakes/sender/")) {
+            } else if (url.startsWith("/handshakes/sender/")) {
                 return resolveHandshakesBySender(request);
-            } else if (request.getUrl().startsWith("/handshakes/receiver/")) {
+            } else if (url.startsWith("/handshakes/receiver/")) {
                 return resolveHandshakesByReceiver(request);
             }
         } else if (Method.POST.equals(request.getMethod())) {
-            log.info("Handling POST request by: '" + request.getClientAddress() + "', url: '" + request.getUrl() + "'");
-            if (request.getUrl().equals("/messages/save")) {
+            log.info("Handling POST request by: '" + request.getClientAddress() + "', url: '" + url + "'");
+            if (url.equals("/messages/save")) {
                 String[] jsonSplit = request.toString().split("\n\\{");
                 String json = "{" + jsonSplit[jsonSplit.length - 1];
                 try {
@@ -65,7 +66,7 @@ public class ResolverResponse implements IResponse {
                     log.error("Unable to save message!", e);
                     return new Response("Unable to save Message!", Status.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN);
                 }
-            } else if (request.getUrl().equals("/handshakes/save")) {
+            } else if (url.equals("/handshakes/save")) {
                 String[] jsonSplit = request.toString().split("\n\\{");
                 String json = "{" + jsonSplit[jsonSplit.length - 1];
                 try {
@@ -93,11 +94,11 @@ public class ResolverResponse implements IResponse {
             return new Response(gson.toJson(handshake), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode handshake UUID: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.debug(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No handshake found with uuid: '" + uuidString + "'!";
-            log.warn(msg);
+            log.debug(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -114,11 +115,11 @@ public class ResolverResponse implements IResponse {
             return new Response(gson.toJson(message), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode message UUID: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.debug(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No message found with uuid: '" + uuidString + "'!";
-            log.warn(msg);
+            log.debug(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -135,11 +136,11 @@ public class ResolverResponse implements IResponse {
             return new Response(gson.toJson(handshakes), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.debug(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No handshakes found for chat: '" + uuidString + "'!";
-            log.warn(msg);
+            log.debug(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -156,11 +157,11 @@ public class ResolverResponse implements IResponse {
             return new Response(gson.toJson(messages), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.debug(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No messages found for chat: '" + uuidString + "'!";
-            log.warn(msg);
+            log.debug(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -177,11 +178,11 @@ public class ResolverResponse implements IResponse {
             return new Response(gson.toJson(handshakes), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.debug(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No handshakes found for sender: '" + uuidString + "'!";
-            log.warn(msg);
+            log.debug(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -198,11 +199,11 @@ public class ResolverResponse implements IResponse {
             return new Response(gson.toJson(messages), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.debug(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No messages found for sender: '" + uuidString + "'!";
-            log.warn(msg);
+            log.debug(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -219,11 +220,11 @@ public class ResolverResponse implements IResponse {
             return new Response(gson.toJson(handshakes), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.debug(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No handshakes found for receiver: '" + uuidString + "'!";
-            log.warn(msg);
+            log.debug(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
@@ -240,11 +241,11 @@ public class ResolverResponse implements IResponse {
             return new Response(gson.toJson(messages), Status.OK, ContentType.APPLICATION_OCTET_STREAM);
         } catch (IllegalArgumentException e) {
             String msg = "Unable to decode UUID: '" + uuidString + "'!";
-            log.error(msg, e);
+            log.debug(msg, e);
             return new Response(msg, Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
         } catch (DatabaseManager.NoResultException e) {
             String msg = "No messages found for receiver: '" + uuidString + "'!";
-            log.warn(msg);
+            log.debug(msg);
             return new Response(msg, Status.NOT_FOUND, ContentType.TEXT_PLAIN);
         } catch (SQLException e) {
             String msg = "Error querying the database!";
