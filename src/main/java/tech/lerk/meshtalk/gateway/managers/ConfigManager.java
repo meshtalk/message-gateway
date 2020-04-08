@@ -25,6 +25,7 @@ public class ConfigManager {
     private String dbConnection = "";
     private String dbUser = "";
     private String dbPassword = "";
+    private String adminPassword = "";
 
     public ConfigManager() {
         try (InputStream in = getClass().getClassLoader().getResourceAsStream("server.properties")) {
@@ -34,6 +35,7 @@ public class ConfigManager {
 
                 port = Integer.parseInt(properties.getProperty("server.port"));
                 maxSize = Integer.parseInt(properties.getProperty("server.maxsize"));
+                adminPassword = properties.getProperty("server.admin.pass");
                 dbConnection = properties.getProperty("db.connection");
                 dbUser = properties.getProperty("db.user");
                 dbPassword = properties.getProperty("db.password");
@@ -65,5 +67,9 @@ public class ConfigManager {
 
     public String getDbPassword() {
         return dbPassword;
+    }
+
+    public String getAdminPassword() {
+        return adminPassword;
     }
 }

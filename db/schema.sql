@@ -28,6 +28,7 @@ create table if not exists meshtalk_mg.handshakes
     uuid_chat     VARCHAR(36)        not null,
     uuid_sender   VARCHAR(36)        not null,
     uuid_receiver VARCHAR(36)        not null,
+    uuid_reply    VARCHAR(36)        not null,
     date          VARCHAR            not null,
     key           VARCHAR            not null,
     iv            VARCHAR            not null

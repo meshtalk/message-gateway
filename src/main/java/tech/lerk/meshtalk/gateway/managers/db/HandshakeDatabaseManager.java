@@ -27,14 +27,15 @@ public class HandshakeDatabaseManager {
     public void saveHandshake(Handshake handshake) throws SQLException {
         log.info("Saving handshake: '" + handshake.getId() + "'");
         PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO meshtalk_mg.handshakes " +
-                "(uuid_id, uuid_chat, uuid_sender, uuid_receiver, date, key, iv) VALUES (?, ?, ?, ?, ?, ?, ?);");
+                "(uuid_id, uuid_chat, uuid_sender, uuid_receiver, uuid_reply, date, key, iv) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
         preparedStatement.setString(1, handshake.getId().toString());
         preparedStatement.setString(2, handshake.getChat().toString());
         preparedStatement.setString(3, handshake.getSender().toString());
         preparedStatement.setString(4, handshake.getReceiver().toString());
-        preparedStatement.setString(5, Utils.getGson().toJson(handshake.getDate()));
-        preparedStatement.setString(6, handshake.getKey());
-        preparedStatement.setString(7, handshake.getIv());
+        preparedStatement.setString(5, handshake.getReply().toString());
+        preparedStatement.setString(6, Utils.getGson().toJson(handshake.getDate()));
+        preparedStatement.setString(7, handshake.getKey());
+        preparedStatement.setString(8, handshake.getIv());
         preparedStatement.executeUpdate();
     }
 
@@ -105,6 +106,7 @@ public class HandshakeDatabaseManager {
         h.setChat(UUID.fromString(resultSet.getString("uuid_chat")));
         h.setSender(UUID.fromString(resultSet.getString("uuid_sender")));
         h.setReceiver(UUID.fromString(resultSet.getString("uuid_receiver")));
+        h.setReply(UUID.fromString(resultSet.getString("uuid_reply")));
         h.setDate(Utils.getGson().fromJson(resultSet.getString("date"), LocalDateTime.class));
         h.setKey(resultSet.getString("key"));
         h.setIv(resultSet.getString("iv"));

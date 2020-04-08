@@ -7,13 +7,14 @@ import org.slf4j.LoggerFactory;
 import sh.lrk.yahs.*;
 import tech.lerk.meshtalk.entities.Handshake;
 import tech.lerk.meshtalk.entities.Message;
+import tech.lerk.meshtalk.entities.Sendable;
 import tech.lerk.meshtalk.gateway.managers.db.DatabaseManager;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-public class ResolverResponse implements IResponse {
+public class ResolverResponse extends JSONResponse {
     /**
      * Logger.
      */
@@ -51,39 +52,55 @@ public class ResolverResponse implements IResponse {
             }
         } else if (Method.POST.equals(request.getMethod())) {
             log.info("Handling POST request by: '" + request.getClientAddress() + "', url: '" + url + "'");
-            if (url.equals("/messages/save")) {
-                String[] jsonSplit = request.toString().split("\n\\{");
-                String json = "{" + jsonSplit[jsonSplit.length - 1];
-                try {
-                    Message message = gson.fromJson(json, Message.class);
-                    log.info("Got new message: '" + message.getId() + "'!");
-                    databaseManager.getMessageDatabaseManager().saveMessage(message);
-                    return new Response("Message received!", Status.OK, ContentType.TEXT_PLAIN);
-                } catch (JsonSyntaxException e) {
-                    log.error("Unable to decode JSON: '" + json + "'", e);
-                    return new Response("Unable to decode JSON!", Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
-                } catch (SQLException e) {
-                    log.error("Unable to save message!", e);
-                    return new Response("Unable to save Message!", Status.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN);
-                }
-            } else if (url.equals("/handshakes/save")) {
-                String[] jsonSplit = request.toString().split("\n\\{");
-                String json = "{" + jsonSplit[jsonSplit.length - 1];
-                try {
-                    Handshake handshake = gson.fromJson(json, Handshake.class);
-                    log.info("Got new handshake: '" + handshake.getId() + "'!");
-                    databaseManager.getHandshakeDatabaseManager().saveHandshake(handshake);
-                    return new Response("Handshake received!", Status.OK, ContentType.TEXT_PLAIN);
-                } catch (JsonSyntaxException e) {
-                    log.error("Unable to decode JSON: '" + json + "'", e);
-                    return new Response("Unable to decode JSON!", Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
-                } catch (SQLException e) {
-                    log.error("Unable to save message!", e);
-                    return new Response("Unable to save Message!", Status.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN);
-                }
+            switch (url) {
+                case "/messages/save":
+                    String messageJson = getJSONBody(request);
+                    try {
+                        return saveSendable(gson.fromJson(messageJson, Message.class));
+                    } catch (JsonSyntaxException e) {
+                        log.error("Unable to decode JSON: '" + messageJson + "'", e);
+                        return new Response("Unable to decode JSON!", Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
+                    }
+                case "/handshakes/save":
+                    String handshakeJson = getJSONBody(request);
+                    try {
+                        return saveSendable(gson.fromJson(handshakeJson, Handshake.class));
+                    } catch (JsonSyntaxException e) {
+                        log.error("Unable to decode JSON: '" + handshakeJson + "'", e);
+                        return new Response("Unable to decode JSON!", Status.BAD_REQUEST, ContentType.TEXT_PLAIN);
+                    }
+                case "/admin":
+                    return AdminResponse.handle(request);
+                default:
+                    return new Response("Nothing found!", Status.NOT_FOUND, ContentType.TEXT_PLAIN);
             }
         }
         return new Response("Nothing found!", Status.NOT_FOUND, ContentType.TEXT_PLAIN);
+    }
+
+
+    private Response saveSendable(Sendable sendable) {
+        if (sendable instanceof Handshake) {
+            try {
+                log.info("Got new handshake: '" + sendable.getId() + "'!");
+                databaseManager.getHandshakeDatabaseManager().saveHandshake((Handshake) sendable);
+                return new Response("Handshake received!", Status.OK, ContentType.TEXT_PLAIN);
+            } catch (SQLException e) {
+                log.error("Unable to save handshake!", e);
+                return new Response("Unable to save handshake!", Status.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN);
+            }
+        } else if (sendable instanceof Message) {
+            try {
+                log.info("Got new message: '" + sendable.getId() + "'!");
+                databaseManager.getMessageDatabaseManager().saveMessage((Message) sendable);
+                return new Response("Handshake received!", Status.OK, ContentType.TEXT_PLAIN);
+            } catch (SQLException e) {
+                log.error("Unable to save message!", e);
+                return new Response("Unable to save Message!", Status.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN);
+            }
+        } else {
+            return new Response("Unable to save entity!", Status.INTERNAL_SERVER_ERROR, ContentType.TEXT_PLAIN);
+        }
     }
 
     private Response resolveHandshakeById(Request request) {
